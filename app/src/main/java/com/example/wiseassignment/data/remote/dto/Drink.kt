@@ -1,4 +1,4 @@
-package com.example.wiseassignment.data.remote
+package com.example.wiseassignment.data.remote.dto
 
 //import com.example.wiseassignment.domain.model.ingredient
 //import com.example.wiseassignment.domain.model.instruction

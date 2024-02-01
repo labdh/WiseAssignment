@@ -1,65 +1,74 @@
 package com.example.wiseassignment.presentation.drinkdetail.activities
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.bumptech.glide.Glide
 import com.example.wiseassignment.R
+import com.example.wiseassignment.data.remote.dto.toingredient
+import com.example.wiseassignment.data.remote.dto.toinstruction
+import com.example.wiseassignment.data.remote.dto.tomeasures
+import com.example.wiseassignment.databinding.ActivityProductDetailsBinding
+import com.example.wiseassignment.domain.model.Detail
 import com.example.wiseassignment.presentation.drinkdetail.Viewmodel.DrinkdetailVM
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductDetails : AppCompatActivity() {
-    lateinit var strDrink : TextView
-    lateinit var strcategory : TextView
-    lateinit var strimage : ImageView
-    lateinit var strmeasure : TextView
-    lateinit var stringre : TextView
-    lateinit var strinstr : TextView
-    var measure_str: String =""
-    var ingredient_str: String =""
-    var instruction_str: String =""
+    lateinit var binding : ActivityProductDetailsBinding
+    lateinit var mainViewModel: DrinkdetailVM
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_product_details)
-
-        strDrink = findViewById(R.id.product_name)
-        strmeasure = findViewById(R.id.product_measures)
-        strcategory = findViewById(R.id.product_category)
-        strimage = findViewById(R.id.product_image)
-        strinstr = findViewById(R.id.product_instructions)
-        stringre = findViewById(R.id.product_ingredients)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_product_details)
+        mainViewModel = ViewModelProvider(this).get(DrinkdetailVM::class.java)
         setdetails()
     }
 
     private fun setdetails(){
         val bundle: Bundle? = intent.extras
         if(bundle != null){
-            strDrink.text = bundle.getString("strname")
-            strcategory.text = bundle.getString("strcategory")
-            if(bundle.getString("strthumb")!=null) Glide.with(this).load(bundle.getString("strthumb")).into(strimage)
-            val stringMeasure = bundle.getStringArrayList("measure")
-            if (stringMeasure != null) {
-                for(it in stringMeasure) measure_str += it+','.toString()
+            val strDrinkname = bundle.getString("strname")
+            if (strDrinkname != null) {
+                Log.e("click",strDrinkname)
+                setDatabyID(strDrinkname)
             }
-            val stringIngredient = bundle.getStringArrayList("ingredient")
-            if (stringIngredient != null) {
-                for(it in stringIngredient) ingredient_str += it+','.toString()
-            }
-            val stringinstruction = bundle.getStringArrayList("instruction")
-            if (stringinstruction != null) {
-                var temp = 1
-                for(it in stringinstruction) {
-                    instruction_str += "${temp}) "+it+'\n'.toString()
-                    temp++
-                }
-            }
-            strmeasure.text = measure_str
-            stringre.text = ingredient_str
-            strinstr.text = instruction_str
         }
+    }
+
+    private fun setDatabyID(name:String){
+        mainViewModel.getDrinkbyId(name)
+        mainViewModel.productsLiveData.observe(this, Observer {
+                val strDrink = it.drinks.get(0).strDrink
+                val strcategory = it.drinks.get(0).strCategory
+                val strthumb = it.drinks.get(0).strDrinkThumb
+                val strmeasure = getstring(it.drinks.get(0).tomeasures().arrayList,',')
+                val strinstruction = getstring(it.drinks.get(0).toinstruction().arrayList,'\n')
+                val stringredient = getstring(it.drinks.get(0).toingredient().arrayList,',')
+                val detail = Detail(strthumb,strDrink,strcategory,strmeasure,stringredient,strinstruction)
+            Log.e("abcd",detail.toString())
+                binding.detail = detail
+        })
+    }
+
+    private fun getstring(drink:ArrayList<Any>,char : Char):String{
+        var array : ArrayList<String> = arrayListOf()
+        var string : String =""
+        for(m in drink){
+            if(m!=null) array.add(m.toString())
+        }
+
+        var temp =1
+        if (array != null && char == ',') {
+            for(it in array) string += it+char
+        }
+        else if (array != null && char == '\n') {
+            for(it in array){
+                string += "${temp}) "+it+char
+                temp++
+            }
+        }
+        return string
     }
 }

@@ -1,10 +1,8 @@
 package com.example.wiseassignment.domain.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.wiseassignment.data.remote.Drink
-import com.example.wiseassignment.data.remote.Drinkdto
+import com.example.wiseassignment.data.remote.dto.Drinkdto
 import com.example.wiseassignment.data.remote.drinksAPI
 import javax.inject.Inject
 
@@ -21,14 +19,14 @@ class DrinkRepository @Inject constructor(private val drinkAPI: drinksAPI) {
         }
     }
 
-//    private val _drinksdetail = MutableLiveData<Drink>()
-//    val productsDetail: LiveData<Drink>
-//        get() = _drinksdetail
-//    suspend fun getProductDetail(strname:String){
-//        val result2 = drinkAPI.getdrinkbyname(strname)
-//        if(result2.isSuccessful && result2.body() != null){
-//            _drinksdetail.postValue(result2.body())
-//        }
-//    }
+    private val _drinksdetail = MutableLiveData<Drinkdto>()
+    val productsDetail: LiveData<Drinkdto>
+        get() = _drinksdetail
+    suspend fun getProductDetail(id:String){
+        val result2 = drinkAPI.getdrinkbyID(id)
+        if(result2.isSuccessful && result2.body() != null){
+            _drinksdetail.postValue(result2.body())
+        }
+    }
 
 }

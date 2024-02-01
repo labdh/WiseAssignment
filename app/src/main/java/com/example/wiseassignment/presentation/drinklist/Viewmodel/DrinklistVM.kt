@@ -3,10 +3,9 @@ package com.example.wiseassignment.presentation.drinklist.Viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wiseassignment.data.remote.Drinkdto
+import com.example.wiseassignment.data.remote.dto.Drinkdto
 import com.example.wiseassignment.domain.repository.DrinkRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,5 +21,4 @@ class DrinklistVM @Inject constructor(private val repository: DrinkRepository ) 
             repository.getProducts()
         }
     }
-
 }
